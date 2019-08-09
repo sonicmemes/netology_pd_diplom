@@ -59,7 +59,7 @@ coverage.xml
 
 */migrations/*
 .log
-.sqlite3
+db.sqlite3
 
 
 # Scrapy stuff:
