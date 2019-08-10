@@ -33,7 +33,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'state',)
         read_only_fields = ('id',)
 
 
@@ -79,10 +79,11 @@ class OrderItemCreateSerializer(OrderItemSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     ordered_items = OrderItemCreateSerializer(read_only=True, many=True)
+
     total_sum = serializers.IntegerField()
     contact = ContactSerializer(read_only=True)
 
     class Meta:
         model = Order
-        fields = ('id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact')
+        fields = ('id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)

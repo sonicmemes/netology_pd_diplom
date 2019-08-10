@@ -1,10 +1,9 @@
 from django.contrib import admin
-
 # Register your models here.
 from django.contrib.auth.admin import UserAdmin
 
 from backend.models import User, Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
-    Contact
+    Contact, ConfirmEmailToken
 
 
 @admin.register(User)
@@ -12,8 +11,8 @@ class CustomUserAdmin(UserAdmin):
     model = User
 
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
+        (None, {'fields': ('email', 'password', 'type')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'company', 'position')}),
         ('Permissions', {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -58,3 +57,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 class ContactAdmin(admin.ModelAdmin):
     pass
 
+
+@admin.register(ConfirmEmailToken)
+class ConfirmEmailTokenAdmin(admin.ModelAdmin):
+    list_display = ('user', 'key', 'created_at',)
