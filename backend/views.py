@@ -23,7 +23,9 @@ from backend.signals import new_user_registered, new_order
 
 
 class RegisterAccount(APIView):
-
+    """
+    Для регистрации покупателей
+    """
     # Регистрация методом POST
     def post(self, request, *args, **kwargs):
 
@@ -47,6 +49,7 @@ class RegisterAccount(APIView):
                 request.data.update({})
                 user_serializer = UserSerializer(data=request.data)
                 if user_serializer.is_valid():
+                    # сохраняем пользователя
                     user = user_serializer.save()
                     user.set_password(request.data['password'])
                     user.save()
@@ -59,7 +62,9 @@ class RegisterAccount(APIView):
 
 
 class ConfirmAccount(APIView):
-
+    """
+    Класс для подтверждения почтового адреса
+    """
     # Регистрация методом POST
     def post(self, request, *args, **kwargs):
 
@@ -80,7 +85,11 @@ class ConfirmAccount(APIView):
 
 
 class AccountDetails(APIView):
+    """
+    Класс для работы данными пользователя
+    """
 
+    # получить данные
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -108,7 +117,7 @@ class AccountDetails(APIView):
             else:
                 request.user.set_password(request.data['password'])
 
-        # проверяем данные для уникальности имени пользователя
+        # проверяем остальные данные
         user_serializer = UserSerializer(request.user, data=request.data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
@@ -118,7 +127,9 @@ class AccountDetails(APIView):
 
 
 class LoginAccount(APIView):
-
+    """
+    Класс для авторизации пользователей
+    """
     # Авторизация методом POST
     def post(self, request, *args, **kwargs):
 
@@ -137,16 +148,25 @@ class LoginAccount(APIView):
 
 
 class CategoryView(ListAPIView):
+    """
+    Класс для просмотра категорий
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class ShopView(ListAPIView):
+    """
+    Класс для просмотра списка магазинов
+    """
     queryset = Shop.objects.filter(state=True)
     serializer_class = ShopSerializer
 
 
 class ProductInfoView(APIView):
+    """
+    Класс для поиска товаров
+    """
     def get(self, request, *args, **kwargs):
 
         query = Q(shop__state=True)
@@ -171,6 +191,11 @@ class ProductInfoView(APIView):
 
 
 class BasketView(APIView):
+    """
+    Класс для работы с корзиной пользователя
+    """
+
+    # получить корзину
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -183,6 +208,7 @@ class BasketView(APIView):
         serializer = OrderSerializer(basket, many=True)
         return Response(serializer.data)
 
+    # редактировать корзину
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -214,6 +240,7 @@ class BasketView(APIView):
                 return JsonResponse({'Status': True, 'Создано объектов': objects_created})
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
+    # удалить товары из корзины
     def delete(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -234,6 +261,7 @@ class BasketView(APIView):
                 return JsonResponse({'Status': True, 'Удалено объектов': deleted_count})
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
+    # добавить позиции в корзину
     def put(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -257,6 +285,9 @@ class BasketView(APIView):
 
 
 class PartnerUpdate(APIView):
+    """
+    Класс для обновления прайса от поставщика
+    """
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -304,6 +335,11 @@ class PartnerUpdate(APIView):
 
 
 class PartnerState(APIView):
+    """
+    Класс для работы со статусом поставщика
+    """
+
+    # получить текущий статус
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -315,6 +351,7 @@ class PartnerState(APIView):
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
 
+    # изменить текущий статус
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -333,6 +370,9 @@ class PartnerState(APIView):
 
 
 class PartnerOrders(APIView):
+    """
+    Класс для получения заказов поставщиками
+    """
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -351,6 +391,11 @@ class PartnerOrders(APIView):
 
 
 class ContactView(APIView):
+    """
+    Класс для работы с контактами покупателей
+    """
+
+    # получить мои контакты
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -359,6 +404,7 @@ class ContactView(APIView):
         serializer = ContactSerializer(contact, many=True)
         return Response(serializer.data)
 
+    # добавить новый контакт
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -376,6 +422,7 @@ class ContactView(APIView):
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
+    # удалить контакт
     def delete(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -395,6 +442,7 @@ class ContactView(APIView):
                 return JsonResponse({'Status': True, 'Удалено объектов': deleted_count})
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
+    # редактировать контакт
     def put(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -415,6 +463,11 @@ class ContactView(APIView):
 
 
 class OrderView(APIView):
+    """
+    Класс для получения и размешения заказов пользователями
+    """
+
+    # получить мои заказы
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
@@ -427,6 +480,7 @@ class OrderView(APIView):
         serializer = OrderSerializer(order, many=True)
         return Response(serializer.data)
 
+    # разместить заказ из корзины
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)

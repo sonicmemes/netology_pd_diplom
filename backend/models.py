@@ -26,6 +26,9 @@ USER_TYPE_CHOICES = (
 
 
 class UserManager(BaseUserManager):
+    """
+    Миксин для управления пользователями
+    """
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
@@ -58,6 +61,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    """
+    Стандартная модель пользователей
+    """
     REQUIRED_FIELDS = []
     objects = UserManager()
     USERNAME_FIELD = 'email'
