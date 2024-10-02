@@ -88,7 +88,7 @@ DATABASES = {
         'USER': 'diplom_user',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
 
@@ -139,6 +139,7 @@ EMAIL_HOST_PASSWORD = 'i~8W4rdRPFlo'
 EMAIL_PORT = '465'
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
